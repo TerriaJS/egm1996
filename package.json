@@ -1,8 +1,9 @@
 {
   "name": "egm1996",
   "version": "1.0.0",
-  "main": "EarthGravityModel1996.js",
   "license": "Apache-2.0",
+  "main": "dist/EarthGravityModel1996.js",
+  "types": "dist/EarthGravityModel1996.d.ts",
   "files": [
     "/dist"
   ],
