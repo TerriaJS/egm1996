@@ -1,0 +1,21 @@
+{
+  "name": "egm1996",
+  "version": "1.0.0",
+  "main": "EarthGravityModel1996.js",
+  "license": "Apache-2.0",
+  "files": [
+    "/dist"
+  ],
+  "dependencies": {
+    "cesium": "^1.59.1"
+  },
+  "devDependencies": {
+    "typescript": "^3.6.3",
+    "@types/node": "^12.0.2",
+    "@types/cesium": "^1.59.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  }
+}
