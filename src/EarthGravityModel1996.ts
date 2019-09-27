@@ -5,7 +5,7 @@ import * as Cesium from "cesium";
  * The Earth Gravity Model 1996 (EGM96) geoid.
  * @param gridFileUrl The URL of the WW15MGH.DAC file.
  */
-export default class EarthGravityModel1996 {
+export class EarthGravityModel1996 {
   gridFilename: string;
   data: any;
   minimumHeight: number;
@@ -32,19 +32,16 @@ export default class EarthGravityModel1996 {
     );
   }
 
-/**
- * Gets the height of EGM96 above the surface of the ellipsoid.
- * @param {Number} longitude The longitude.
- * @param {Number} latitude The latitude
- * @return {Number} The height of mean sea level above the ellipsoid at the specified location.  Negative numbers indicate that mean sea level
- *                  is below the ellipsoid.
- */
-  getHeight(
-    longitude: number,
-    latitude: number
-  ): number {
+  /**
+   * Gets the height of EGM96 above the surface of the ellipsoid.
+   * @param {Number} longitude The longitude.
+   * @param {Number} latitude The latitude
+   * @return {Number} The height of mean sea level above the ellipsoid at the specified location.  Negative numbers indicate that mean sea level
+   *                  is below the ellipsoid.
+   */
+  getHeight(longitude: number, latitude: number): number {
     return getHeightFromData(getHeightData(this), longitude, latitude);
-  };
+  }
 
   getHeights(cartographicArray) {
     const data = getHeightData(this);
@@ -57,7 +54,7 @@ export default class EarthGravityModel1996 {
       );
     }
     return cartographicArray;
-  };
+  }
 }
 
 function getHeightData(model) {
@@ -138,4 +135,20 @@ function getHeightValue(data, recordIndex, heightIndex) {
   }
 
   return data[recordIndex * 1440 + heightIndex];
+}
+
+let egm: EarthGravityModel1996;
+/**
+ * Gets the height of EGM96 above the surface of the ellipsoid.
+ * @param {Number} longitude The longitude.
+ * @param {Number} latitude The latitude
+ * @return {Number} The height of mean sea level above the ellipsoid at the specified location.  Negative numbers indicate that mean sea level
+ *                  is below the ellipsoid.
+ */
+export function getHeight(longitude: number, latitude: number) {
+  if (egm === undefined) {
+    egm = new EarthGravityModel1996("data/WW15MGH.DAC");
+  }
+
+  return egm.getHeight(longitude, latitude);
 }

@@ -2,8 +2,8 @@
   "name": "egm1996",
   "version": "1.0.0",
   "license": "Apache-2.0",
-  "main": "dist/EarthGravityModel1996.js",
-  "types": "dist/EarthGravityModel1996.d.ts",
+  "main": "./dist/EarthGravityModel1996.js",
+  "types": "./dist/EarthGravityModel1996.d.ts",
   "files": [
     "/dist"
   ],
