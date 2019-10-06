@@ -31,14 +31,25 @@ var EarthGravityModel1996 = /** @class */ (function () {
     };
     /**
      * Gets the height of EGM96 above the surface of the ellipsoid.
-     * @param {Number} longitude The longitude.
-     * @param {Number} latitude The latitude
+     * @param {Number} longitude The longitude in radians. If your longitude is in
+     *        degrees, multiply it by `(2 * Math.PI / 180.0)` before passing it to
+     *        this function.
+     * @param {Number} latitude The latitude in radians. If your latitude is in
+     *        degrees, multiply it by `(2 * Math.PI / 180.0)` before passing it to
+     *        this function.
      * @return {Number} The height of mean sea level above the ellipsoid at the specified location.  Negative numbers indicate that mean sea level
-     *                  is below the ellipsoid.
+     *                  is below the ellipsoid. Heights are in meters.
      */
     EarthGravityModel1996.prototype.getHeight = function (longitude, latitude) {
         return getHeightFromData(getHeightData(this), longitude, latitude);
     };
+    /**
+     * Gets the EGM96 geoid heights for an array of element with `longitude`, `latitude`,
+     * and `height` properties. The `longitude` and `latitude` are in radians and the
+     * height is in meters. The `height` property is replaced with the geoid height
+     * on return.
+     * @param cartographicArray
+     */
     EarthGravityModel1996.prototype.getHeights = function (cartographicArray) {
         var data = getHeightData(this);
         for (var i = 0; i < cartographicArray.length; ++i) {
@@ -123,14 +134,18 @@ function getHeightValue(data, recordIndex, heightIndex) {
 var egm;
 /**
  * Gets the height of EGM96 above the surface of the ellipsoid.
- * @param {Number} longitude The longitude.
- * @param {Number} latitude The latitude
+ * @param {Number} longitude The longitude in radians. If your longitude is in
+ *        degrees, multiply it by `(2 * Math.PI / 180.0)` before passing it to
+ *        this function.
+ * @param {Number} latitude The latitude in radians. If your latitude is in
+ *        degrees, multiply it by `(2 * Math.PI / 180.0)` before passing it to
+ *        this function.
  * @return {Number} The height of mean sea level above the ellipsoid at the specified location.  Negative numbers indicate that mean sea level
  *                  is below the ellipsoid.
  */
 function getHeight(longitude, latitude) {
     if (egm === undefined) {
-        egm = new EarthGravityModel1996("data/WW15MGH.DAC");
+        egm = new EarthGravityModel1996(require.resolve("../data/WW15MGH.DAC"));
     }
     return egm.getHeight(longitude, latitude);
 }

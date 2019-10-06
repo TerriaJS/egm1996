@@ -33,15 +33,26 @@ export class EarthGravityModel1996 {
 
   /**
    * Gets the height of EGM96 above the surface of the ellipsoid.
-   * @param {Number} longitude The longitude.
-   * @param {Number} latitude The latitude
+   * @param {Number} longitude The longitude in radians. If your longitude is in
+   *        degrees, multiply it by `(2 * Math.PI / 180.0)` before passing it to
+   *        this function.
+   * @param {Number} latitude The latitude in radians. If your latitude is in
+   *        degrees, multiply it by `(2 * Math.PI / 180.0)` before passing it to
+   *        this function.
    * @return {Number} The height of mean sea level above the ellipsoid at the specified location.  Negative numbers indicate that mean sea level
-   *                  is below the ellipsoid.
+   *                  is below the ellipsoid. Heights are in meters.
    */
   getHeight(longitude: number, latitude: number): number {
     return getHeightFromData(getHeightData(this), longitude, latitude);
   }
 
+  /**
+   * Gets the EGM96 geoid heights for an array of element with `longitude`, `latitude`,
+   * and `height` properties. The `longitude` and `latitude` are in radians and the
+   * height is in meters. The `height` property is replaced with the geoid height
+   * on return.
+   * @param cartographicArray 
+   */
   getHeights(cartographicArray) {
     const data = getHeightData(this);
     for (var i = 0; i < cartographicArray.length; ++i) {
@@ -147,14 +158,18 @@ function getHeightValue(data, recordIndex, heightIndex) {
 let egm: EarthGravityModel1996;
 /**
  * Gets the height of EGM96 above the surface of the ellipsoid.
- * @param {Number} longitude The longitude.
- * @param {Number} latitude The latitude
+ * @param {Number} longitude The longitude in radians. If your longitude is in
+ *        degrees, multiply it by `(2 * Math.PI / 180.0)` before passing it to
+ *        this function.
+ * @param {Number} latitude The latitude in radians. If your latitude is in
+ *        degrees, multiply it by `(2 * Math.PI / 180.0)` before passing it to
+ *        this function.
  * @return {Number} The height of mean sea level above the ellipsoid at the specified location.  Negative numbers indicate that mean sea level
  *                  is below the ellipsoid.
  */
 export function getHeight(longitude: number, latitude: number) {
   if (egm === undefined) {
-    egm = new EarthGravityModel1996("data/WW15MGH.DAC");
+    egm = new EarthGravityModel1996(require.resolve("../data/WW15MGH.DAC"));
   }
 
   return egm.getHeight(longitude, latitude);
