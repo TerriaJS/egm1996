@@ -4,19 +4,13 @@
   "license": "Apache-2.0",
   "main": "./dist/EarthGravityModel1996.js",
   "types": "./dist/EarthGravityModel1996.d.ts",
-  "files": [
-    "/dist"
-  ],
-  "dependencies": {
-    "cesium": "^1.59.1"
-  },
   "devDependencies": {
     "typescript": "^3.6.3",
-    "@types/node": "^12.0.2",
-    "@types/cesium": "^1.59.1"
+    "@types/node": "^12.0.2"
   },
   "scripts": {
     "build": "tsc",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "postpublish": "bash -c \"git tag -a ${npm_package_version} -m \"${npm_package_version}\" && git push origin ${npm_package_version}\""
   }
 }

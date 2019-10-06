@@ -8,7 +8,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = __importStar(require("fs"));
-var Cesium = __importStar(require("cesium"));
 /**
  * The Earth Gravity Model 1996 (EGM96) geoid.
  * @param gridFileUrl The URL of the WW15MGH.DAC file.
@@ -40,7 +39,6 @@ var EarthGravityModel1996 = /** @class */ (function () {
     EarthGravityModel1996.prototype.getHeight = function (longitude, latitude) {
         return getHeightFromData(getHeightData(this), longitude, latitude);
     };
-    ;
     EarthGravityModel1996.prototype.getHeights = function (cartographicArray) {
         var data = getHeightData(this);
         for (var i = 0; i < cartographicArray.length; ++i) {
@@ -49,12 +47,11 @@ var EarthGravityModel1996 = /** @class */ (function () {
         }
         return cartographicArray;
     };
-    ;
     return EarthGravityModel1996;
 }());
-exports.default = EarthGravityModel1996;
+exports.EarthGravityModel1996 = EarthGravityModel1996;
 function getHeightData(model) {
-    if (!Cesium.defined(model.data)) {
+    if (!model.data) {
         var data = fs.readFileSync(model.gridFilename);
         // Data file is big-endian, all relevant platforms are little endian, so swap the byte order.
         var byteView = new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
@@ -68,15 +65,23 @@ function getHeightData(model) {
     return model.data;
 }
 function getHeightFromData(data, longitude, latitude) {
-    var recordIndex = (720 * (Cesium.Math.PI_OVER_TWO - latitude)) / Math.PI;
+    var recordIndex = (720 * (Math.PI * 0.5 - latitude)) / Math.PI;
     if (recordIndex < 0) {
         recordIndex = 0;
     }
     else if (recordIndex > 720) {
         recordIndex = 720;
     }
-    longitude = Cesium.Math.zeroToTwoPi(longitude);
-    var heightIndex = (1440 * longitude) / Cesium.Math.TWO_PI;
+    // Put the longitude in the range 0 to 2Pi.
+    var twoPi = Math.PI * 2.0;
+    var modTwoPi = ((longitude % twoPi) + twoPi) % twoPi;
+    if (Math.abs(modTwoPi) < 1e-14 && Math.abs(longitude) > 1e-14) {
+        longitude = twoPi;
+    }
+    else {
+        longitude = modTwoPi;
+    }
+    var heightIndex = (1440 * longitude) / (Math.PI * 2.0);
     if (heightIndex < 0) {
         heightIndex = 0;
     }
@@ -115,3 +120,18 @@ function getHeightValue(data, recordIndex, heightIndex) {
     }
     return data[recordIndex * 1440 + heightIndex];
 }
+var egm;
+/**
+ * Gets the height of EGM96 above the surface of the ellipsoid.
+ * @param {Number} longitude The longitude.
+ * @param {Number} latitude The latitude
+ * @return {Number} The height of mean sea level above the ellipsoid at the specified location.  Negative numbers indicate that mean sea level
+ *                  is below the ellipsoid.
+ */
+function getHeight(longitude, latitude) {
+    if (egm === undefined) {
+        egm = new EarthGravityModel1996("data/WW15MGH.DAC");
+    }
+    return egm.getHeight(longitude, latitude);
+}
+exports.getHeight = getHeight;
